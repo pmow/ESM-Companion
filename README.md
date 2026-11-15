@@ -21,31 +21,68 @@ Open the latest [Build Companion Firmwares](https://github.com/pmow/EasySkyMesh-
 and under **Artifacts** download the one named after your board, e.g. `RAK_WisMesh_Tag_companion_radio_ble`
 (`.uf2` for drag-and-drop, `.zip` for DFU). You need to be signed in to GitHub to download artifacts.
 
-## Usage
+## Using the Command Line
 
-Type these in the MeshCore app's **Command Line** screen (bottom of Settings) or on the USB serial console.
+All settings are changed with text commands from the MeshCore app:
+
+1. Connect the app to your radio over Bluetooth.
+2. Open **Settings** and scroll to the bottom.
+3. Tap **Command Line**.
+4. Type a command (for example `gps` or `zone`) and send it. The radio's reply appears below it.
+
+The same commands also work on the USB serial console (115200 baud).
+
+### GPS
+
+| Command | What it does |
+|---|---|
+| `gps` | Show GPS status: on/off, powered or sleeping, fix or no fix, satellites, when it next sleeps or wakes, and the last time sync |
+| `gps on` / `gps off` | Turn the GPS on or off (saved) |
+| `gps sync` | Ask the GPS to get a fix and sync the time now |
+
+With PowerSaving on, the GPS wakes up periodically and on telemetry requests, then sleeps again to save battery.
 
 ### GPS privacy zone
 
-| Command | Meaning |
+| Command | What it does |
 |---|---|
-| `zone box <lat1> <lon1> <lat2> <lon2>` | Hide your location inside this rectangle (two opposite corners); turns the zone on |
-| `zone` | Show the zone and whether you're inside it right now |
-| `zone on` / `zone off` / `zone clear` | Turn on, turn off, erase |
-| `zone1` … `zone4 <lat> <lon>` or `here` | Set corners one at a time, for a slanted shape |
+| `zone box lat1 lon1 lat2 lon2` | Hide your location inside this rectangle, given as two opposite corners. Also turns the zone on. |
+| `zone` | Show whether the zone is on, its corners, and whether you're inside it right now |
+| `zone on` / `zone off` | Turn the zone on or off |
+| `zone clear` | Erase the zone and turn it off |
+| `zone1` … `zone4 lat lon` | Set corners one at a time, for a slanted shape |
+| `zone1` … `zone4 here` | Set a corner to where you're standing (needs a GPS fix) |
 
-Coordinates are decimal degrees, latitude first, e.g. `zone box 52.3720 4.8890 52.3740 4.8920`.
+Coordinates are decimal degrees, **latitude first**. For example, a box around a house:
+
+```
+zone box 52.3720 4.8890 52.3740 4.8920
+```
+
+In Google Maps, right-click (or long-press) a spot to copy its coordinates. Make the box a little bigger
+than you need, because GPS readings can drift by tens of metres. Run `zone` at home to check it says
+`inside: location hidden`.
+
 Zone commands can't be used over remote CLI (LoRa), so only you can read or change your zone.
 
 ### Auto-adverts
 
-| Command | Range |
+| Command | What it does |
 |---|---|
-| `set advert.interval <minutes>` | 60–240, `0` = off (zero-hop) |
-| `set flood.advert.interval <hours>` | 3–168, `0` = off (flood) |
-| `get advert.interval` / `get flood.advert.interval` | Show the setting |
+| `set advert.interval minutes` | Zero-hop advert to nearby nodes every 60–240 minutes, `0` = off |
+| `set flood.advert.interval hours` | Advert flooded across the mesh every 3–168 hours, `0` = off |
+| `get advert.interval` / `get flood.advert.interval` | Show the current setting |
 
-Every advert, including the boot advert, follows the app's location-sharing setting and the GPS privacy zone.
+Both are off by default. One zero-hop advert is also sent 15 seconds after every boot.
+Every advert follows the app's location-sharing setting and the GPS privacy zone.
+
+### PowerSaving and other
+
+| Command | What it does |
+|---|---|
+| `powersaving` | Show whether PowerSaving is on |
+| `powersaving on` / `powersaving off` | Turn PowerSaving on or off (on by default) |
+| `ver` | Show the firmware version and build date |
 
 ## Building
 
