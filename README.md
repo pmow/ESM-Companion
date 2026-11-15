@@ -1,6 +1,6 @@
-# EasySkyMesh GPS Zone
+# ESM Companion
 
-A fork of **EasySkyMesh** (PowerSaving 18 by IoTThinks) that adds quality-of-life features for companion radios:
+A fork of **EasySkyMesh** by IoTThinks, a power-saving firmware with duty cycle and other tweaks.  The fork adds quality-of-life features for companion radios:
 
 - **Auto-adverts**: send adverts automatically on a timer, nearby (zero-hop) and/or across the whole mesh (flood).
 - **GPS privacy by zone**: your location is never shared while you're inside an area you choose, such as your home.
@@ -37,7 +37,7 @@ The same commands also work on the USB serial console (115200 baud).
 | Command | What it does |
 |---|---|
 | `gps` | Show GPS status: on/off, powered or sleeping, fix or no fix, satellites, when it next sleeps or wakes, and the last time sync |
-| `gps on` / `gps off` | Turn the GPS on or off (saved) |
+| `gps on` / `gps off` | Turn the GPS on or off, same as the app UI |
 | `gps sync` | Ask the GPS to get a fix and sync the time now |
 
 With PowerSaving on, the GPS wakes up periodically and on telemetry requests, then sleeps again to save battery.
@@ -50,8 +50,6 @@ With PowerSaving on, the GPS wakes up periodically and on telemetry requests, th
 | `zone` | Show whether the zone is on, its corners, and whether you're inside it right now |
 | `zone on` / `zone off` | Turn the zone on or off |
 | `zone clear` | Erase the zone and turn it off |
-| `zone1` … `zone4 lat lon` | Set corners one at a time, for a slanted shape |
-| `zone1` … `zone4 here` | Set a corner to where you're standing (needs a GPS fix) |
 
 Coordinates are decimal degrees, **latitude first**. For example, a box around a house:
 
