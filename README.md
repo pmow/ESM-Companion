@@ -17,7 +17,7 @@ Firmware is built for every board EasySkyMesh builds companion firmware for, but
 
 ## Download
 
-Open the latest [Build Companion Firmwares](https://github.com/pmow/EasySkyMesh-GPSZone/actions/workflows/build-companion-firmwares.yml) run,
+Open the latest [Build Companion Firmwares](https://github.com/pmow/ESM-Companion/actions/workflows/build-companion-firmwares.yml) run,
 and under **Artifacts** download the one named after your board, e.g. `RAK_WisMesh_Tag_companion_radio_ble`
 (`.uf2` for drag-and-drop, `.zip` for DFU). You need to be signed in to GitHub to download artifacts.
 
