@@ -10,6 +10,8 @@ on:
       - 'companion-*'
     branches:
       - 'gps-privacy-zone'   # build all companions (with GPS privacy zone) on every push to this branch
+    paths-ignore:
+      - '**.md'              # documentation-only pushes don't need 182 firmware builds
 
 jobs:
   build-companion-firmwares:

@@ -1,128 +1,99 @@
-## About MeshCore
+# EasySkyMesh PowerSaving + GPS Privacy Zone
 
-MeshCore is a lightweight, portable C++ library that enables multi-hop packet routing for embedded projects using LoRa and other packet radios. It is designed for developers who want to create resilient, decentralized communication networks that work without the internet.
+An unofficial build of **[EasySkyMesh](https://github.com/IoTThinks/EasySkyMesh)** PowerSaving 18 by
+[IoTThinks](https://iotthinks.com/), the long-range, low-power MeshCore firmware, with a few additions
+for **companion** radios that carry a GPS:
 
-## 🔍 What is MeshCore?
+- **GPS privacy zone**: your location is never sent while you're inside an area you choose (e.g. home).
+- **Automatic adverts** on a timer, set the same way as on repeaters.
+- **Boot advert**: one zero-hop advert shortly after power-on.
 
-MeshCore now supports a range of LoRa devices, allowing for easy flashing without the need to compile firmware manually. Users can flash a pre-built binary using tools like Adafruit ESPTool and interact with the network through a serial console.
-MeshCore provides the ability to create wireless mesh networks, similar to Meshtastic and Reticulum but with a focus on lightweight multi-hop packet routing for embedded projects. Unlike Meshtastic, which is tailored for casual LoRa communication, or Reticulum, which offers advanced networking, MeshCore balances simplicity with scalability, making it ideal for custom embedded solutions, where devices (nodes) can communicate over long distances by relaying messages through intermediate nodes. This is especially useful in off-grid, emergency, or tactical situations where traditional communication infrastructure is unavailable.
+Everything else is EasySkyMesh PowerSaving 18 as released by IoTThinks (based on MeshCore 1.18).
+Repeaters, room servers and sensors are unchanged.
 
-## ⚡ Key Features
+> This is not an official EasySkyMesh release. For the official firmware, go to
+> [easyskymesh.com](https://easyskymesh.com/) and the [EasySkyMesh releases](https://github.com/IoTThinks/EasySkyMesh/releases).
 
-* Multi-Hop Packet Routing
-  * Devices can forward messages across multiple nodes, extending range beyond a single radio's reach.
-  * Supports up to a configurable number of hops to balance network efficiency and prevent excessive traffic.
-  * Nodes use fixed roles where "Companion" nodes are not repeating messages at all to prevent adverse routing paths from being used.
-* Supports LoRa Radios – Works with Heltec, RAK Wireless, and other LoRa-based hardware.
-* Decentralized & Resilient – No central server or internet required; the network is self-healing.
-* Low Power Consumption – Ideal for battery-powered or solar-powered devices.
-* Simple to Deploy – Pre-built example applications make it easy to get started.
+## 1. Download and Flash
 
-## 🎯 What Can You Use MeshCore For?
+1. Open the latest [Build Companion Firmwares](https://github.com/pmow/EasySkyMesh-GPSZone/actions/workflows/build-companion-firmwares.yml) run.
+2. Under **Artifacts**, download the one named after your board, e.g. `RAK_WisMesh_Tag_companion_radio_ble`.
+   - nRF52 boards (RAK, WisMesh Tag, T-Echo, …): `.uf2` for drag-and-drop, `.zip` for DFU.
+   - ESP32 boards (Heltec, Station, …): `.bin` files, use the `-freshInstall-merged.bin` one for a fresh install.
+3. Flash it the same way as EasySkyMesh: see IoTThinks' [instructions to flash custom firmware](https://github.com/IoTThinks/EasySkyMesh/blob/main/firmware/Instruction-to-flash-firmware.md).
 
-* Off-Grid Communication: Stay connected even in remote areas.
-* Emergency Response & Disaster Recovery: Set up instant networks where infrastructure is down.
-* Outdoor Activities: Hiking, camping, and adventure racing communication.
-* Tactical & Security Applications: Military, law enforcement, and private security use cases.
-* IoT & Sensor Networks: Collect data from remote sensors and relay it back to a central location.
+You need to be signed in to GitHub to download artifacts. Builds are kept for 90 days.
 
-## 🚀 How to Get Started
+Every EasySkyMesh companion target is built (`*_companion_radio_usb` and `*_companion_radio_ble`).
+These currently fail in EasySkyMesh PowerSaving 18 itself and are not available:
+Heltec Mesh Solar (USB and BLE), PicoW BLE, Station G2 BLE.
 
-- Watch the [MeshCore QuickStart Playlist](https://www.youtube.com/watch?v=iaFltojJrAc&list=PLshzThxhw4O4WU_iZo3NmNZOv6KMrUuF9) by The Comms Channel
-- Watch the [MeshCore Technical Presentation](https://www.youtube.com/watch?v=OwmkVkZQTf4) by Liam Cottle.
-- Read through our [Frequently Asked Questions](./docs/faq.md) and [Documentation](https://docs.meshcore.io).
-- Flash the MeshCore firmware on a supported device.
-- Connect with a supported client.
+## 2. GPS Privacy Zone
 
-For developers:
+While the companion's GPS position is inside the zone, it never transmits its location:
+adverts go out without lat/lon and GPS telemetry is left out. Messaging and everything else work as normal.
 
-- Install [PlatformIO](https://docs.platformio.org) in [Visual Studio Code](https://code.visualstudio.com).
-- Clone and open the MeshCore repository in Visual Studio Code.
-- See the example applications you can modify and run:
-  - [Companion Radio](./examples/companion_radio) - For use with an external chat app, over BLE, USB or Wi-Fi.
-  - [KISS Modem](./examples/kiss_modem) - Serial KISS protocol bridge for host applications. ([protocol docs](./docs/kiss_modem_protocol.md))
-  - [Simple Repeater](./examples/simple_repeater) - Extends network coverage by relaying messages.
-  - [Simple Room Server](./examples/simple_room_server) - A simple BBS server for shared Posts.
-  - [Simple Secure Chat](./examples/simple_secure_chat) - Secure terminal based text communication between devices.
-  - [Simple Sensor](./examples/simple_sensor) - Remote sensor node with telemetry and alerting.
+Set it from the MeshCore app's **Command Line** screen (bottom of Settings) or the USB serial console:
 
-The Simple Secure Chat example can be interacted with through the Serial Monitor in Visual Studio Code, or with a Serial USB Terminal on Android.
+| Command | Meaning |
+|---|---|
+| `zone box <lat1> <lon1> <lat2> <lon2>` | Rectangle from two opposite corners (also turns the zone on) |
+| `zone1` … `zone4 <lat> <lon>` | Set one corner of a 4-corner zone, for a slanted shape |
+| `zone1` … `zone4 here` | Set a corner to where you are now (needs a GPS fix) |
+| `zone` | Show on/off, the corners, and whether you're inside right now |
+| `zone on` / `zone off` / `zone clear` | Turn on, turn off, erase |
 
-## ⚡️ MeshCore Flasher
+Example, a box around a house:
 
-We have prebuilt firmware ready to flash on supported devices.
-
-- Launch https://meshcore.io/flasher
-- Select a supported device
-- Flash one of the firmware types:
-  - Companion, Repeater or Room Server
-- Once flashing is complete, you can connect with one of the MeshCore clients below.
-
-## 📱 MeshCore Clients
-
-**Companion Firmware**
-
-The companion firmware can be connected to via BLE, USB or Wi-Fi depending on the firmware type you flashed.
-
-- Web: https://app.meshcore.nz
-- Android: https://play.google.com/store/apps/details?id=com.liamcottle.meshcore.android
-- iOS: https://apps.apple.com/us/app/meshcore/id6742354151?platform=iphone
-- NodeJS: https://github.com/liamcottle/meshcore.js
-- Python: https://github.com/fdlamotte/meshcore-cli
-
-**Repeater and Room Server Firmware**
-
-The repeater and room server firmware can be set up via USB in the web config tool.
-
-- https://config.meshcore.io
-
-They can also be managed via LoRa in the mobile app by using the Remote Management feature.
-
-## 🛠 Hardware Compatibility
-
-MeshCore is designed for devices listed in the [MeshCore Flasher](https://meshcore.io/flasher)
-
-## 📜 License
-
-MeshCore is open-source software released under the MIT License. You are free to use, modify, and distribute it for personal and commercial projects.
-
-## Contributing
-
-Please submit PR's using 'dev' as the base branch!
-For minor changes just submit your PR and we'll try to review it, but for anything more 'impactful' please open an Issue first and start a discussion. It is better to sound out what it is you want to achieve first, and try to come to a consensus on what the best approach is, especially when it impacts the structure or architecture of this codebase.
-
-Here are some general principles you should try to adhere to:
-* Keep it simple. Please, don't think like a high-level lang programmer. Think embedded, and keep code concise, without any unnecessary layers.
-* No dynamic memory allocation, except during setup/begin functions.
-* Use the same brace and indenting style that's in the core source modules. (A .clang-format is probably going to be added soon, but please do NOT retroactively re-format existing code. This just creates unnecessary diffs that make finding problems harder)
-
-Help us prioritize! Please react with thumbs-up to issues/PRs you care about most. We look at reaction counts when planning work.
-
-### Running unit tests
-
-To run unit tests, run the following command:
-
-```bash
-pio test --environment native --verbose
+```
+zone box 52.3720 4.8890 52.3740 4.8920
 ```
 
-## Road-Map / To-Do
+- Coordinates are decimal degrees, **latitude first**. In Google Maps, right-click a spot to copy its coordinates.
+- Make the zone a little bigger than you need, because GPS readings can drift by tens of metres.
+- Settings are saved and survive reboots.
+- Zone commands are **refused over remote CLI (LoRa)**, so the corners can only be read or changed from your own phone or USB.
 
-There are a number of fairly major features in the pipeline, with no particular time-frames attached yet. In very rough chronological order:
-- [X] Companion radio: UI redesign
-- [X] Repeater + Room Server: add ACL's (like Sensor Node has)
-- [X] Standardise Bridge mode for repeaters
-- [ ] Repeater/Bridge: Standardise the Transport Codes for zoning/filtering
-- [X] Core + Repeater: enhanced zero-hop neighbour discovery
-- [ ] Core: round-trip manual path support
-- [ ] Companion + Apps: support for multiple sub-meshes (and 'off-grid' client repeat mode)
-- [ ] Core + Apps: support for LZW message compression
-- [ ] Core: dynamic CR (Coding Rate) for weak vs strong hops
-- [ ] Core: new framework for hosting multiple virtual nodes on one physical device
-- [ ] V2 protocol spec: discussion and consensus around V2 packet protocol, including path hashes, new encryption specs, etc
+## 3. Automatic Adverts and Boot Advert
 
-## 📞 Get Support
+| Command | Range |
+|---|---|
+| `set advert.interval <minutes>` | 60–240, `0` = off. Zero-hop advert to nearby nodes. |
+| `set flood.advert.interval <hours>` | 3–168, `0` = off. Advert flooded across the mesh. |
+| `get advert.interval` / `get flood.advert.interval` | Show the current setting. |
 
-- Report bugs and request features on the [GitHub Issues](https://github.com/meshcore-dev/meshcore/issues) page.
-- Find additional guides and components on [my site](https://buymeacoffee.com/ripplebiz).
-- Join [MeshCore Discord](https://meshcore.gg) to chat with the developers and get help from the community.
+Both are off by default. One zero-hop advert is also sent 15 seconds after every boot.
+
+All adverts follow the app's location-sharing setting **and** the GPS privacy zone.
+
+## 4. PowerSaving
+
+PowerSaving works exactly as in EasySkyMesh and is on by default. The main commands are `powersaving on`,
+`powersaving off`, `gps on`, `gps off` and `gps sync`; see the
+[PowerSaving Wiki](https://github.com/IoTThinks/EasySkyMesh/wiki/PowerSaving) and the
+[PowerSaving 18 release notes](https://github.com/IoTThinks/EasySkyMesh/releases/tag/PowerSaving18) for details.
+
+## 5. Building
+
+Use `build.sh`, which turns the zone on (`-DWITH_GPS_PRIVACY_ZONE=1`) for every companion target:
+
+```bash
+FIRMWARE_VERSION=gpszone bash build.sh build-firmware RAK_WisMesh_Tag_companion_radio_ble
+```
+
+Every push to the `gps-privacy-zone` branch rebuilds all companion firmwares on GitHub Actions
+(pushes that only change `.md` files are skipped).
+
+## 6. Credits and Support EasySkyMesh
+
+- EasySkyMesh and PowerSaving are developed by [IoTThinks](https://iotthinks.com/), with contributions from
+  the people credited in their [release notes](https://github.com/IoTThinks/EasySkyMesh/releases/tag/PowerSaving18).
+- Source this is based on: [IoTThinks/MeshCore, branch PowerSaving-v18](https://github.com/IoTThinks/MeshCore/tree/PowerSaving-v18).
+- MeshCore itself: [meshcore-dev/MeshCore](https://github.com/meshcore-dev/MeshCore). Its original README is in [README-MeshCore.md](README-MeshCore.md).
+- If you enjoy PowerSaving, support IoTThinks via [PayPal](https://www.paypal.com/ncp/payment/6FGWJJVC572VL) or
+  [GitHub Sponsors](https://github.com/sponsors/IoTThinks).
+
+Please report problems with the GPS zone, auto adverts or boot advert **here**, not to IoTThinks.
+For PowerSaving itself, use the [EasySkyMesh discussions](https://github.com/IoTThinks/EasySkyMesh/discussions).
+
+License: MIT, the same as MeshCore (see [license.txt](license.txt)).
